@@ -23,6 +23,8 @@ class ViewController: UIViewController, MCSessionDelegate, MCBrowserViewControll
         mcSession = MCSession(peer: peerID, securityIdentity: nil, encryptionPreference: .optional)
         mcSession.delegate = self
         // Do any additional setup after loading the view, typically from a nib.
+        
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -76,7 +78,15 @@ class ViewController: UIViewController, MCSessionDelegate, MCBrowserViewControll
         print("Sending Data")
         if mcSession.connectedPeers.count > 0 {
             print("Sending Data 2")
-            if let data = Data(base64Encoded: "This is some data"){
+            
+            let plainString = "foo"
+            guard let plainData = (plainString as NSString).data(using: String.Encoding.utf8.rawValue) else {
+                fatalError()
+            }
+            
+            let base64String = (plainData as NSData).base64EncodedString(options: NSData.Base64EncodingOptions(rawValue: 0))
+
+            if  let data = Data.init(base64Encoded: base64String){
                 do {
                     print("Sending Data 3")
                     try mcSession.send(data, toPeers: mcSession.connectedPeers, with: .reliable)
@@ -92,7 +102,7 @@ class ViewController: UIViewController, MCSessionDelegate, MCBrowserViewControll
 
     func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
         let textData = data.base64EncodedString()
-        print("Got Data")
+        print("Got Data" + textData)
         
         if !textData.isEmpty {
             DispatchQueue.main.async { [unowned self] in
@@ -128,5 +138,34 @@ class ViewController: UIViewController, MCSessionDelegate, MCBrowserViewControll
     @IBAction func sendText(_ sender: Any) {
         sendText()
     }
+    
+    /*
+     vvvv how to encode
+ let plainString = "foo"
+ guard let plainData = (plainString as NSString).data(using: String.Encoding.utf8.rawValue) else {
+ fatalError()
+ }
+ 
+ let base64String = (plainData as NSData).base64EncodedString(options: NSData.Base64EncodingOptions(rawValue: 0))
+ print(base64String) // Zm9v
+ 
+ //let data = Data.init(base64Encoded: "This is some data", encoding: )
+ let data = Data.init(base64Encoded: base64String)
+ 
+ //String(//String(data: data!, encoding: .utf8)
+ print(data)
+ 
+  vvvv how to get data OUT of encoding
+ 
+ if data != nil {
+ do {
+ let actualString = String(data: data!, encoding: String.Encoding.utf8)//return String(data: data, encoding: .utf8)
+ print(actualString)
+ }
+ }
+ else {
+ print("Helo")
+ }
+ */
 }
 
