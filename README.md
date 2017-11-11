@@ -5,5 +5,7 @@ This Swift project which shows the bare bones of getting two devices connected, 
 Specs:
 
 -- Utalizes MultipeerConnectivity library
+
 -- XCode 9 Beta
+
 -- Swift 4.0
